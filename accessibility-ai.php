@@ -40,16 +40,6 @@ class AccessibilityAI {
             'dashicons-format-image',
             20
         );
-
-        // Submenu for settings
-        add_submenu_page(
-            'accessibility-ai',
-            __('Settings', 'accessibility-ai'),
-            __('Settings', 'accessibility-ai'),
-            'manage_options',
-            'accessibility-ai-settings',
-            [$this, 'settings_page']
-        );
     }
 
     public function register_settings() {
@@ -58,21 +48,6 @@ class AccessibilityAI {
             'sanitize_callback' => 'sanitize_text_field',
             'default' => 'localhost',
         ]);
-
-        add_settings_section(
-            'accessibility_ai_settings_section',
-            __('LLVM Server Settings', 'accessibility-ai'),
-            null,
-            'accessibility-ai-settings'
-        );
-
-        add_settings_field(
-            'accessibility_ai_server_ip',
-            __('LLVM Server IP Address', 'accessibility-ai'),
-            [$this, 'server_ip_field_callback'],
-            'accessibility-ai-settings',
-            'accessibility_ai_settings_section'
-        );
     }
 
     public function server_ip_field_callback() {
@@ -106,7 +81,30 @@ class AccessibilityAI {
         ?>
         <div class="wrap">
             <h1><?php _e('Accessibility & AI - Image Alt Text Manager', 'accessibility-ai'); ?></h1>
-            <table class="wp-list-table widefat fixed striped">
+
+				<form method="post" action="options.php">
+            <?php
+            settings_fields('accessibility_ai_settings_group');
+            ?>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><?php _e('LLVM Server IP Address', 'accessibility-ai'); ?></th>
+                    <td>
+                        <?php
+                        $ip = get_option('accessibility_ai_server_ip', 'localhost');
+                        echo '<input type="text" id="accessibility_ai_server_ip" name="accessibility_ai_server_ip" value="' . esc_attr($ip) . '" class="regular-text" />';
+                        ?>
+                        <p class="description"><?php _e('Enter the IP address hosting the LLVM model.', 'accessibility-ai'); ?></p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button(); ?>
+        </form>
+					
+					
+					
+					
+					<table class="wp-list-table widefat fixed striped">
                 <thead>
                     <tr>
                         <th><?php _e('Image', 'accessibility-ai'); ?></th>
@@ -135,20 +133,7 @@ class AccessibilityAI {
         <?php
     }
 
-    public function settings_page() {
-        ?>
-        <div class="wrap">
-            <h1><?php _e('Accessibility & AI Settings', 'accessibility-ai'); ?></h1>
-            <form method="post" action="options.php">
-                <?php
-                settings_fields('accessibility_ai_settings_group');
-                do_settings_sections('accessibility-ai-settings');
-                submit_button();
-                ?>
-            </form>
-        </div>
-        <?php
-    }
+    
 
     public function ajax_generate_alt_text() {
         check_ajax_referer('accessibility_ai_nonce', 'nonce');
@@ -179,8 +164,8 @@ class AccessibilityAI {
         $base64Image = base64_encode($image_data);
 
         // Prepare the API request
-        //$api_url = 'http://' . esc_attr($server_ip) . ':1234/v1/chat/completions';
-        $api_url = ' https://408a-98-24-246-193.ngrok-free.app/v1/chat/completions';
+        $api_url = 'http://' . esc_attr($server_ip) . ':1234/v1/chat/completions';
+        //$api_url = ' https://408a-98-24-246-193.ngrok-free.app/v1/chat/completions';
 
         $payload = [
             'model' => 'xtuner/llava-llama-3-8b-v1_1-gguf',
