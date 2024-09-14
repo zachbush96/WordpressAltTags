@@ -1,0 +1,20 @@
+/* admin/css/admin.css */
+
+.wrap h1 {
+    margin-bottom: 20px;
+}
+
+.wp-list-table img {
+    border: 1px solid #ddd;
+    padding: 5px;
+    background: #fff;
+}
+
+.alt-text-input {
+    padding: 5px;
+}
+
+.button {
+    margin-right: 5px;
+    margin-top: 5px;
+}
